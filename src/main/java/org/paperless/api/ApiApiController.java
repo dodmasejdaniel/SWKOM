@@ -3,7 +3,7 @@ package org.paperless.api;
 
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.paperless.bl.services.DocumentService;
-import org.paperless.model.Document;
+import org.paperless.model.DocumentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +41,7 @@ public class ApiApiController implements ApiApi {
         try {
 
             String name = documentArg.get(0).getOriginalFilename();
-            Document documentDTO = new Document();
+            DocumentDTO documentDTO = new DocumentDTO();
             documentDTO.setTitle(JsonNullable.of(title == null ? name : title));
             documentDTO.setOriginalFileName(JsonNullable.of(name));
             documentDTO.setCreated(created);

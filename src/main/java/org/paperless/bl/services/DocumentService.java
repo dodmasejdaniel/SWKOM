@@ -1,9 +1,9 @@
 package org.paperless.bl.services;
 
-import org.paperless.model.Document;
+import org.paperless.bl.mapper.DocumentMapper;
+import org.paperless.model.DocumentDTO;
 import org.paperless.persistence.entities.DocumentsDocument;
 import org.paperless.persistence.repositories.DocumentsDocumentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,40 +14,29 @@ import java.util.UUID;
 @Service
 public class DocumentService implements IDocumentService {
     private final DocumentsDocumentRepository documentRepository;
+    private final DocumentMapper documentMapper;
 
-    public DocumentService(DocumentsDocumentRepository documentRepository) {
+    public DocumentService(DocumentsDocumentRepository documentRepository, DocumentMapper documentMapper) {
         this.documentRepository = documentRepository;
+        this.documentMapper = documentMapper;
     }
 
     @Override
-    public void uploadDocument(Document document, MultipartFile file) {
+    public void uploadDocument(DocumentDTO documentDTO, MultipartFile file) {
 
-        document.setCreated(OffsetDateTime.now());
-        document.setAdded(OffsetDateTime.now());
-        document.setModified(OffsetDateTime.now());
-        document.content("");
-        document.setAdded(OffsetDateTime.now());
+        documentDTO.setCreated(OffsetDateTime.now());
+        documentDTO.content("");
+        documentDTO.setAdded(OffsetDateTime.now());
+        documentDTO.setModified(OffsetDateTime.now());
 
+        DocumentsDocument entity = documentMapper.dtoToEntity(documentDTO);
 
-        // DocumentsDocument documentToBeSaved = documentMapper.dtoToEntity(documentDTO);
+        entity.setStorageType("pdf");
+        entity.setMimeType("pdf");
+        entity.setChecksum("checksum");
 
-        DocumentsDocument documentToBeSaved = new DocumentsDocument();
-        documentToBeSaved.setTitle("Sample Title" + UUID.randomUUID());
-        documentToBeSaved.setContent("Sample Content");
-        documentToBeSaved.setCreated(OffsetDateTime.now()); // Set the current time for created
-        documentToBeSaved.setModified(OffsetDateTime.now()); // Set the current time for modified
-        documentToBeSaved.setChecksum("sampleChecksum");
-        documentToBeSaved.setAdded(OffsetDateTime.now()); // Set the current time for added
-        documentToBeSaved.setStorageType("pdf");
-        documentToBeSaved.setMimeType("application/pdf"); // Example mime type for PDF
+        documentRepository.save(entity);
 
-        documentToBeSaved.setFilename("sample.pdf");
-        documentToBeSaved.setArchiveSerialNumber(123);
-        documentToBeSaved.setArchiveChecksum("sampleArchiveChecksum");
-        documentToBeSaved.setArchiveFilename("sampleArchiveFilename");
-        documentToBeSaved.setOriginalFilename("sampleOriginalFilename");
-
-        documentRepository.save(documentToBeSaved);
 
         List<DocumentsDocument> all = documentRepository.findAll();
         System.out.println("==========================");
