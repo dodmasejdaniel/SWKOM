@@ -5,53 +5,13 @@
  */
 package org.paperless.api;
 
-import org.paperless.model.AckTasks200Response;
-import org.paperless.model.AckTasksRequest;
-import org.paperless.model.BulkEditRequest;
-import org.paperless.model.CreateCorrespondentRequest;
-import org.paperless.model.CreateDocumentType200Response;
-import org.paperless.model.CreateGroupRequest;
-import org.paperless.model.CreateSavedViewsRequest;
-import org.paperless.model.CreateStoragePath200Response;
-import org.paperless.model.CreateStoragePathRequest;
-import org.paperless.model.CreateTag200Response;
-import org.paperless.model.CreateTagRequest;
-import org.paperless.model.CreateUISettings200Response;
-import org.paperless.model.CreateUISettingsRequest;
-import org.paperless.model.CreateUserRequest;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.paperless.bl.services.DocumentService;
+import org.paperless.model.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.paperless.model.GetCorrespondents200Response;
-import org.paperless.model.GetDocument200Response;
-import org.paperless.model.GetDocumentMetadata200Response;
-import org.paperless.model.GetDocumentSuggestions200Response;
-import org.paperless.model.GetDocumentTypes200Response;
-import org.paperless.model.GetDocuments200Response;
-import org.paperless.model.GetGroups200Response;
-import org.paperless.model.GetSavedViews200Response;
-import org.paperless.model.GetStoragePaths200Response;
-import org.paperless.model.GetTags200Response;
-import org.paperless.model.GetTasks200ResponseInner;
-import org.paperless.model.GetUISettings200Response;
-import org.paperless.model.GetUsers200Response;
-import org.paperless.model.GetUsers200ResponseResultsInner;
+
 import java.time.OffsetDateTime;
-import org.paperless.model.SelectionData200Response;
-import org.paperless.model.SelectionDataRequest;
-import org.paperless.model.Statistics200Response;
-import org.paperless.model.UpdateCorrespondent200Response;
-import org.paperless.model.UpdateCorrespondentRequest;
-import org.paperless.model.UpdateDocument200Response;
-import org.paperless.model.UpdateDocumentRequest;
-import org.paperless.model.UpdateDocumentType200Response;
-import org.paperless.model.UpdateDocumentTypeRequest;
-import org.paperless.model.UpdateGroup200Response;
-import org.paperless.model.UpdateGroupRequest;
-import org.paperless.model.UpdateStoragePath200Response;
-import org.paperless.model.UpdateStoragePathRequest;
-import org.paperless.model.UpdateTag200Response;
-import org.paperless.model.UpdateTagRequest;
-import org.paperless.model.UpdateUserRequest;
-import org.paperless.model.UserInfo;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -73,11 +33,10 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
+@Generated(value = "org.paperless.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
 @Validated
 @Tag(name = "Tasks", description = "the Tasks API")
 public interface ApiApi {
-
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
@@ -1799,7 +1758,7 @@ public interface ApiApi {
      * @param documentType  (optional)
      * @param tags  (optional)
      * @param correspondent  (optional)
-     * @param document  (optional)
+     * @param documentArg  (optional)
      * @return Success (status code 200)
      */
     @Operation(
@@ -1821,10 +1780,9 @@ public interface ApiApi {
         @Parameter(name = "document_type", description = "") @Valid @RequestParam(value = "document_type", required = false) Integer documentType,
         @Parameter(name = "tags", description = "") @Valid @RequestPart(value = "tags", required = false) List<Integer> tags,
         @Parameter(name = "correspondent", description = "") @Valid @RequestParam(value = "correspondent", required = false) Integer correspondent,
-        @Parameter(name = "document", description = "") @RequestPart(value = "document", required = false) List<MultipartFile> document
+        @Parameter(name = "document", description = "") @RequestPart(value = "document", required = false) List<MultipartFile> documentArg
     ) {
         return new ResponseEntity<>(HttpStatus.OK);
-
     }
 
 }
