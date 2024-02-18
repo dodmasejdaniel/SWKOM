@@ -4,6 +4,7 @@ package org.paperless.api;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.paperless.bl.services.DocumentService;
 import org.paperless.model.DocumentDTO;
+import org.paperless.model.GetDocument200Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,5 +63,10 @@ public class ApiApiController implements ApiApi {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @Override
+    public ResponseEntity<GetDocument200Response> getDocument(Integer id, Integer page, Boolean fullPerms) {
+        return ResponseEntity.ok(documentService.getDocument(id, page, fullPerms));
     }
 }
