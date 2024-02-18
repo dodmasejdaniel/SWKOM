@@ -5,6 +5,7 @@ import org.openapitools.jackson.nullable.JsonNullable;
 import org.paperless.bl.services.DocumentService;
 import org.paperless.model.DocumentDTO;
 import org.paperless.model.GetDocument200Response;
+import org.paperless.model.GetDocuments200Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -68,5 +70,10 @@ public class ApiApiController implements ApiApi {
     @Override
     public ResponseEntity<GetDocument200Response> getDocument(Integer id, Integer page, Boolean fullPerms) {
         return ResponseEntity.ok(documentService.getDocument(id, page, fullPerms));
+    }
+
+    @Override
+    public ResponseEntity<GetDocuments200Response> getDocuments(Integer page, Integer pageSize, String query, String ordering, List<Integer> tagsIdAll, Integer documentTypeId, Integer storagePathIdIn, Integer correspondentId, Boolean truncateContent) throws IOException {
+        return documentService.getDocuments(page, pageSize, query, ordering, tagsIdAll, documentTypeId, storagePathIdIn, correspondentId, truncateContent);
     }
 }

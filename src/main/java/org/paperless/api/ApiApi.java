@@ -10,6 +10,7 @@ import org.paperless.bl.services.DocumentService;
 import org.paperless.model.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -971,7 +972,7 @@ public interface ApiApi {
         @Parameter(name = "storage_path__id__in", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "storage_path__id__in", required = false) Integer storagePathIdIn,
         @Parameter(name = "correspondent__id", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "correspondent__id", required = false) Integer correspondentId,
         @Parameter(name = "truncate_content", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "truncate_content", required = false) Boolean truncateContent
-    ) {
+    ) throws IOException {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
