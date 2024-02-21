@@ -16,7 +16,7 @@ import javax.annotation.Generated;
  */
 
 @JsonTypeName("GetDocument_200_response_permissions")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
+@Generated(value = "org.paperless.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
 public class GetDocument200ResponsePermissions {
 
   private GetDocument200ResponsePermissionsView view;
