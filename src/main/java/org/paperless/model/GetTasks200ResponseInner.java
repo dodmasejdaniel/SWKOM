@@ -15,7 +15,7 @@ import javax.annotation.Generated;
  */
 
 @JsonTypeName("GetTasks_200_response_inner")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
+@Generated(value = "org.paperless.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
 public class GetTasks200ResponseInner {
 
   private Integer id;
