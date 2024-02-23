@@ -1,12 +1,16 @@
 package org.paperless.bl.services;
 
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import org.paperless.bl.mapper.DocumentMapper;
 import org.paperless.bl.mapper.GetDocument200ResponseMapper;
 import org.paperless.model.DocumentDTO;
 import org.paperless.model.GetDocument200Response;
 import org.paperless.model.GetDocuments200Response;
 import org.paperless.persistence.entities.DocumentsDocument;
+import org.paperless.persistence.entities.DocumentsStoragepath;
 import org.paperless.persistence.repositories.DocumentsDocumentRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,12 +25,16 @@ public class DocumentService implements IDocumentService {
     private final DocumentsDocumentRepository documentRepository;
     private final DocumentMapper documentMapper;
     private final GetDocument200ResponseMapper getDocument200ResponseMapper;
+    private final MinioClient minioClient;
 
+    @Value("${minio.bucket}")
+    private String bucket;
 
-    public DocumentService(DocumentsDocumentRepository documentRepository, DocumentMapper documentMapper, GetDocument200ResponseMapper getDocument200ResponseMapper) {
+    public DocumentService(DocumentsDocumentRepository documentRepository, DocumentMapper documentMapper, GetDocument200ResponseMapper getDocument200ResponseMapper, MinioClient minioClient) {
         this.documentRepository = documentRepository;
         this.documentMapper = documentMapper;
         this.getDocument200ResponseMapper = getDocument200ResponseMapper;
+        this.minioClient = minioClient;
     }
 
     @Override
@@ -43,8 +51,31 @@ public class DocumentService implements IDocumentService {
         entity.setMimeType("pdf");
         entity.setChecksum("checksum");
 
-        documentRepository.save(entity);
+        String filename = file.getOriginalFilename();
+        try {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(filename)
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
+
+        DocumentsStoragepath documentsStoragepath = new DocumentsStoragepath();
+        documentsStoragepath.setMatch("");
+        documentsStoragepath.setMatchingAlgorithm(0);
+        documentsStoragepath.setIsInsensitive(false);
+        documentsStoragepath.setPath(bucket + "/" + filename);
+        documentsStoragepath.setName(file.getOriginalFilename());
+
+        entity.setStoragePath(documentsStoragepath);
+
+        documentRepository.save(entity);
 
         List<DocumentsDocument> all = documentRepository.findAll();
         System.out.println("==========================");
