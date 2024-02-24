@@ -1,5 +1,7 @@
 package org.paperless;
 
+import io.minio.MinioClient;
+import io.minio.errors.*;
 import org.paperless.bl.mapper.GetDocument200ResponseMapper;
 import org.paperless.bl.services.DocumentService;
 import org.paperless.model.DocumentDTO;
@@ -24,13 +26,21 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+
 import java.util.Collections;
 import java.util.HashSet;
 
@@ -49,15 +59,22 @@ public class ServiceTests {
     @Mock
     private GetDocument200ResponseMapper getDocument200ResponseMapper;
 
+    @Mock
+    private MinioClient minioClient;
+
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+
     @InjectMocks
     private DocumentService documentService;
 
 
     @Test
-    void testUploadDocument() {
+    void testUploadDocument() throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         // Prepare test data
         DocumentDTO documentDTO = new DocumentDTO();
         MultipartFile file = mock(MultipartFile.class);
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0])); // Provide a non-null input stream
 
         // Mock behavior
         when(documentMapper.dtoToEntity(documentDTO)).thenReturn(new DocumentsDocument());
@@ -68,6 +85,8 @@ public class ServiceTests {
         // Verify interactions
         verify(documentMapper).dtoToEntity(documentDTO);
         verify(documentRepository).save(any(DocumentsDocument.class));
+        verify(minioClient).putObject(any());
+        verify(rabbitTemplate).convertAndSend(anyString(), anyString());
     }
 
     @Test
