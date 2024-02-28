@@ -7,6 +7,7 @@ import pytesseract
 from dotenv import load_dotenv
 from minio import Minio
 from pdf2image import convert_from_bytes
+from elasticsearch import Elasticsearch
 
 
 class RabbitMQConnection:
@@ -66,6 +67,33 @@ class PostgresConnection:
             raise e
 
 
+class ElasticSearchService:
+    def __init__(self, endpoint, username, password):
+        self.endpoint = endpoint
+        self.username = username
+        self.password = password
+
+        self.es = Elasticsearch([self.endpoint], basic_auth=(self.username, self.password))
+
+        if not self.es.indices.exists(index="paperless"):
+            self.es.indices.create(index="paperless")
+
+    def index(self, document):
+        try:
+            print(f"Indexing with: {document}")
+            response = self.es.index(
+                index="paperless",
+                id=document["document_name"],
+                body=document
+            )
+
+            return response['result']
+
+        except Exception as e:
+            print(f"Error on ID {document['document_name']}: {e}")
+            return None
+
+
 def update_document_content(conn, text, title):
     try:
         cur = conn.cursor()
@@ -88,7 +116,7 @@ def update_document_content(conn, text, title):
         raise e
 
 
-def on_document_received(body, minio_client, conn):
+def on_document_received(body, minio_client, conn, es_service):
     try:
         file_url = body.decode('utf-8')
         bucket_name = file_url.split('/')[0]
@@ -102,6 +130,10 @@ def on_document_received(body, minio_client, conn):
             content += pytesseract.image_to_string(image_data, lang="deu") + "\n"
 
         update_document_content(conn, content, file_path)
+        es_service.index({
+            "document_name": file_path,
+            "body": content
+        })
         print("Document processed successfully" + file_path)
     except Exception as e:
         print("Error: Could not process file")
@@ -131,6 +163,12 @@ def main():
         os.getenv("POSTGRES_PORT")
     )
 
+    es_service = ElasticSearchService(
+        os.getenv("ES_HOST"),
+        os.getenv("ES_USERNAME"),
+        os.getenv("ES_PASSWORD")
+    )
+
     rabbitmq_conn = rabbitmq_connection.connect()
     minio_client = minio_connection.connect()
     postgres_conn = postgres_connection.connect()
@@ -141,7 +179,8 @@ def main():
     channel.basic_consume(queue='ORC_DOCUMENT_IN',
                           on_message_callback=lambda ch, method, properties, body: on_document_received(body,
                                                                                                         minio_client,
-                                                                                                        postgres_conn),
+                                                                                                        postgres_conn,
+                                                                                                        es_service),
                           auto_ack=True)
 
     print("OCR started!")
