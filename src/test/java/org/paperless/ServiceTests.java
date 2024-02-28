@@ -4,6 +4,7 @@ import io.minio.MinioClient;
 import io.minio.errors.*;
 import org.paperless.bl.mapper.GetDocument200ResponseMapper;
 import org.paperless.bl.services.DocumentService;
+import org.paperless.bl.services.ESService;
 import org.paperless.model.DocumentDTO;
 import org.paperless.model.GetDocuments200Response;
 import org.paperless.persistence.entities.*;
@@ -64,6 +65,9 @@ public class ServiceTests {
 
     @Mock
     private RabbitTemplate rabbitTemplate;
+
+    @Mock
+    private ESService esService;
 
     @InjectMocks
     private DocumentService documentService;
@@ -128,4 +132,24 @@ public class ServiceTests {
         assertEquals(200, responseEntity.getStatusCodeValue());
     }
 
+    @Test
+    void testGetDocumentsES() throws IOException {
+        // Prepare test data
+        Integer page = 1;
+        Integer pageSize = 10;
+        String query = "test content";
+        String ordering = null;
+        List<Integer> tagsIdAll = Collections.emptyList();
+        Integer documentTypeId = null;
+        Integer storagePathIdIn = null;
+        Integer correspondentId = null;
+        Boolean truncateContent = null;
+
+        // Call method under test
+        ResponseEntity<GetDocuments200Response> responseEntity = documentService.getDocuments(page, pageSize, query, ordering, tagsIdAll, documentTypeId, storagePathIdIn, correspondentId, truncateContent);
+
+        // Verify interactions
+        verify(esService).searchEsForDocument(query);
+        assertEquals(200, responseEntity.getStatusCodeValue());
+    }
 }
