@@ -31,17 +31,18 @@ public class DocumentService implements IDocumentService {
     private final GetDocument200ResponseMapper getDocument200ResponseMapper;
     private final MinioClient minioClient;
     private final RabbitTemplate rabbitTemplate;
-
+    private final ESService ESService;
 
     @Value("${minio.bucket}")
     private String bucket;
 
-    public DocumentService(DocumentsDocumentRepository documentRepository, DocumentMapper documentMapper, GetDocument200ResponseMapper getDocument200ResponseMapper, MinioClient minioClient, RabbitTemplate rabbitTemplate) {
+    public DocumentService(DocumentsDocumentRepository documentRepository, DocumentMapper documentMapper, GetDocument200ResponseMapper getDocument200ResponseMapper, MinioClient minioClient, RabbitTemplate rabbitTemplate, ESService ESService) {
         this.documentRepository = documentRepository;
         this.documentMapper = documentMapper;
         this.getDocument200ResponseMapper = getDocument200ResponseMapper;
         this.minioClient = minioClient;
         this.rabbitTemplate = rabbitTemplate;
+        this.ESService = ESService;
     }
 
     @Override
@@ -87,13 +88,6 @@ public class DocumentService implements IDocumentService {
 
         rabbitTemplate.convertAndSend(RabbitMQConfig.OCR_DOCUMENT_IN_QUEUE_NAME, entity.getStoragePath().getPath());
         log.info("Document saved and added to Queue." + entity.getId() + " " + entity.getTitle() + " " + entity.getStoragePath().getPath());
-
-        List<DocumentsDocument> all = documentRepository.findAll();
-        System.out.println("==========================");
-        System.out.println(all.size());
-        for (DocumentsDocument documentsDocument : all) {
-            System.out.println(documentsDocument.getTitle());
-        }
     }
 
     @Override
@@ -111,12 +105,11 @@ public class DocumentService implements IDocumentService {
                 foundDocuments.add(documentMapper.entityToDto(document));
             }
         } else {
-            for (DocumentsDocument document : documentRepository.findAll()) {
+            List<DocumentsDocument> esDocuments = ESService.searchEsForDocument(query);
+            for (DocumentsDocument document : esDocuments) {
                 foundDocuments.add(documentMapper.entityToDto(document));
             }
-            // TODO: ES vonë
         }
-
 
         GetDocuments200Response sampleResponse = new GetDocuments200Response();
         sampleResponse.setCount(50);
