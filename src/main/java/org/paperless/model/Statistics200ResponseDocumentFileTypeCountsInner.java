@@ -15,7 +15,7 @@ import javax.annotation.Generated;
  */
 
 @JsonTypeName("Statistics_200_response_document_file_type_counts_inner")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
+@Generated(value = "org.paperless.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
 public class Statistics200ResponseDocumentFileTypeCountsInner {
 
   private String mimeType;

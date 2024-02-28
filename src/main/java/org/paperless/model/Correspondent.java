@@ -19,10 +19,10 @@ import javax.annotation.Generated;
  * Correspondent
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
+@Generated(value = "org.paperless.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
 public class Correspondent {
 
-  private Long id;
+  private Integer id;
 
   private JsonNullable<String> slug = JsonNullable.<String>undefined();
 
@@ -39,7 +39,7 @@ public class Correspondent {
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   private OffsetDateTime lastCorrespondence;
 
-  public Correspondent id(Long id) {
+  public Correspondent id(int id) {
     this.id = id;
     return this;
   }
@@ -51,11 +51,11 @@ public class Correspondent {
   
   @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
-  public Long getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(int id) {
     this.id = id;
   }
 
