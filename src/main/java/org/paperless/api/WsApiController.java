@@ -10,7 +10,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
+@Generated(value = "org.paperless.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
 @Controller
 @RequestMapping("${openapi.paperlessRestServer.base-path:}")
 public class WsApiController implements WsApi {

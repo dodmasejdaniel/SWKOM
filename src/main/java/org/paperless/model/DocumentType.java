@@ -14,10 +14,10 @@ import javax.annotation.Generated;
  * DocumentType
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
+@Generated(value = "org.paperless.codegen.languages.SpringCodegen", date = "2024-02-17T12:03:05.936104740Z[Etc/UTC]")
 public class DocumentType {
 
-  private Long id;
+  private Integer id;
 
   private JsonNullable<String> slug = JsonNullable.<String>undefined();
 
@@ -31,7 +31,7 @@ public class DocumentType {
 
   private Long documentCount;
 
-  public DocumentType id(Long id) {
+  public DocumentType id(Integer id) {
     this.id = id;
     return this;
   }
@@ -43,11 +43,11 @@ public class DocumentType {
   
   @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
-  public Long getId() {
+  public Integer getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(Integer id) {
     this.id = id;
   }
 
